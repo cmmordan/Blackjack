@@ -267,24 +267,23 @@ public class BlackjackTable {
                     System.out.println("\tHand " + (player.hands.indexOf(hand) + 1) + ": Winning hand!");
                         if (hand.isBlackjack()) {
                             player.wallet.addBlackjackWinnings((hand.getBet()));
-                            System.out.println("\n\t\t--> BlackJack!\n\n\t\t--> Won $" + (player.hands.get(0).getBet() + (player.hands.get(0).getBet() * 1.5))
-                                    + "!\n\n\t\t--> New wallet total: $"  + player.wallet.getWalletTotal() + "\n");
+                            System.out.println("\n\t\t--> BlackJack!\n\n\t\t--> Won $" + (player.hands.get(0).getBet() + (player.hands.get(0).getBet() * 1.5)));
                         }
                         else {
                             player.wallet.addWinningsToWallet(hand.getBet());
-                            System.out.println("\n\t\t--> Won $" + (player.hands.get(0).getBet() * 2) + "!\n\n\t\t--> New wallet total: $" + player.wallet.getWalletTotal() + "\n");
+                            System.out.println("\n\t\t--> Won $" + (player.hands.get(0).getBet() * 2) + "!\n\n\t\t");
                         }
                 }
                 else if (checkAgainstDealerHand(hand) == WinCondition.LOSE) {
                     System.out.println("\t" + "Hand " + (player.hands.indexOf(hand) + 1) + ": Losing hand...");
-                    System.out.println("\n\t\t--> $" + (player.hands.get(0).getBet()) + " subtracted from wallet\n\n\t\t--> New wallet total: $"  + player.wallet.getWalletTotal() + "\n");
+                    System.out.println("\n\t\t--> $" + (player.hands.get(0).getBet()) + " subtracted from wallet\n\n\t\t");
                 }
                 else {
                     System.out.println("\t" + "Hand " + (player.hands.indexOf(hand) + 1) + ": Hand is a draw.");
                     player.wallet.returnBetToWallet(player.hands.get(0).getBet());
-                    System.out.println("\n\t\t--> Wallet total: $"  + player.wallet.getWalletTotal() + "\n");
                 }
             }
+            System.out.println("\tWallet Total: $" + player.wallet.getWalletTotal() + "/n");
         }
     }
 
