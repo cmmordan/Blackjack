@@ -30,7 +30,7 @@ public class BlackjackTable {
         table.displayPlayerBets();
         table.dealHands();
 
-        //table.playerList.get(0).hands.get(0).setHand(Card.Number.N6, Card.Number.N5);
+        table.playerList.get(0).hands.get(0).setHand(Card.Number.N6, Card.Number.N6);
         //table.dealer.getHand().setHand(Card.Number.N10, Card.Number.N6); //Check for soft 17
         //table.dealer.getHand().setHand(Card.Number.A, Card.Number.N10); //Check for 21
 
@@ -204,14 +204,30 @@ public class BlackjackTable {
     }
 
     public void splitHand(Player player, Hand hand) {
-        player.hands.add(new Hand());
-        Hand newHand = player.hands.get(player.hands.size()-1);
-        player.hands.get(1).setBet(player.hands.get(0).getBet());
-        player.wallet.subtractBetAmount(player.hands.get(1).getBet());
-        newHand.addCard(hand.getCard(1));
-        hand.removeCard(1);
-        hand.addCard(deck.drawCard());
-        newHand.addCard(deck.drawCard());
+        if (player.wallet.isSufficientFunds(player.hands.get(0).getBet())) {
+            player.hands.add(new Hand());
+            Hand newHand = player.hands.get(player.hands.size()-1);
+            player.hands.get(1).setBet(player.hands.get(0).getBet());
+            player.wallet.subtractBetAmount(player.hands.get(1).getBet());
+            newHand.addCard(hand.getCard(1));
+            hand.removeCard(1);
+            hand.addCard(deck.drawCard());
+            newHand.addCard(deck.drawCard());
+        }
+        else {
+            while (!player.wallet.isSufficientFunds(player.hands.get(0).getBet())) {
+                player.wallet.promptTopUpOnly(player.hands.get(0).getBet(), player);
+            }
+            player.hands.add(new Hand());
+            Hand newHand = player.hands.get(player.hands.size()-1);
+            player.hands.get(1).setBet(player.hands.get(0).getBet());
+            player.wallet.subtractBetAmount(player.hands.get(1).getBet());
+            newHand.addCard(hand.getCard(1));
+            hand.removeCard(1);
+            hand.addCard(deck.drawCard());
+            newHand.addCard(deck.drawCard());
+        }
+
     }
 
     private void dealerRound() {

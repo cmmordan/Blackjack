@@ -113,4 +113,8 @@ public class Wallet {
     public double returnBetToWallet(double betAmount) {
         return walletTotal += betAmount;
     }
+
+    public void printWalletTotal() {
+        System.out.println("Wallet total: $" + walletTotal);
+    }
 }
