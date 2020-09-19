@@ -234,8 +234,8 @@ public class BlackjackTable {
         }
         player.hands.add(new Hand());
         Hand newHand = player.hands.get(player.hands.size()-1);
-        player.hands.get(1).setBet(player.hands.get(0).getBet());
-        player.wallet.subtractBetAmount(player.hands.get(1).getBet());
+        newHand.setBet(player.hands.get(0).getBet());
+        player.wallet.subtractBetAmount(player.hands.get(0).getBet());
         newHand.addCard(hand.getCard(1));
         hand.removeCard(1);
         hand.addCard(deck.drawCard());
