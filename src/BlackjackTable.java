@@ -27,14 +27,14 @@ public class BlackjackTable {
         BlackjackTable table = new BlackjackTable(5, 2);
 
         table.takePlayerBet();
-        table.displayPlayerBets();
+        //table.displayPlayerBets();
         table.dealHands();
 
         //table.playerList.get(0).hands.get(0).setHand(Card.Number.A, Card.Number.A);
-        table.dealer.getHand().setHand(Card.Number.N10, Card.Number.N6); //Check for soft 17
+        //table.dealer.getHand().setHand(Card.Number.N10, Card.Number.N6); //Check for soft 17
         //table.dealer.getHand().setHand(Card.Number.A, Card.Number.N10); //Check for 21
 
-        table.displayDealerHand();
+        //table.displayDealerHand();
         table.playRound();
     }
 
@@ -127,7 +127,7 @@ public class BlackjackTable {
     }
 
     public void displayDealerHand() {
-        System.out.println("\nDealer:");
+        System.out.println("\nDealer hand:");
         dealer.getHand().displayDealerHand();
     }
 
@@ -141,8 +141,12 @@ public class BlackjackTable {
                 boolean nextHand = false;
 
                 while (!nextHand) {
-                    System.out.println();
+                    System.out.println("\n==============================");
+                    displayPlayerBets();
+                    displayDealerHand();
                     displayPlayerHands();
+                    System.out.println("==============================\n\n");
+                    //System.out.println("* * * * * * * * * * * * * * * * *\n\n");
 
                     String userInput = askForUserInput(scanner, player);
 
@@ -171,7 +175,8 @@ public class BlackjackTable {
             case "h":
                 hand.addCard(deck.drawCard());
                 if (hand.isBusted()) {
-                    System.out.println("\nBust...");
+                    hand.displayHand();
+                    System.out.println("Bust...");
                     nextHand = true;
                 }
                 break;
@@ -211,16 +216,15 @@ public class BlackjackTable {
     }
 
     private void dealerRound() {
-        System.out.println("\nDealer hand:");
-        dealer.getHand().displayHand();
+        System.out.println("\n* * * * * * * * * * * * * * * * *\n\nDealer hand final:");
+        //dealer.getHand().displayHand();
 
         dealer.playHand(deck);
-
-        System.out.println("\nDealer hand final:");
         dealer.getHand().displayHand();
+        System.out.println("* * * * * * * * * * * * * * * * *\n");
 
         if (dealer.getHand().getHandValue() > 21) {
-            System.out.println("\nDealer busts.");
+            System.out.println("Dealer busts\n");
         }
     }
 

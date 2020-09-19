@@ -84,7 +84,8 @@ public class Hand {
             Card card = hand.get(i);
             System.out.print(card.getDisplayedCard());
         }
-        System.out.println("\n\n----------------\n----------------\n");
+        System.out.println("\n\n");
+        //System.out.println("\n\n----------------\n");
     }
 
     public boolean isBusted() {
