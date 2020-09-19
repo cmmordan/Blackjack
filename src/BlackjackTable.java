@@ -30,8 +30,8 @@ public class BlackjackTable {
         table.displayPlayerBets();
         table.dealHands();
 
-        table.playerList.get(0).hands.get(0).setHand(Card.Number.N6, Card.Number.N6);
-        //table.dealer.getHand().setHand(Card.Number.N10, Card.Number.N6); //Check for soft 17
+        //table.playerList.get(0).hands.get(0).setHand(Card.Number.A, Card.Number.A);
+        table.dealer.getHand().setHand(Card.Number.N10, Card.Number.N6); //Check for soft 17
         //table.dealer.getHand().setHand(Card.Number.A, Card.Number.N10); //Check for 21
 
         table.displayDealerHand();
@@ -160,19 +160,12 @@ public class BlackjackTable {
         switch (playerChoice.toLowerCase()) {
             case "double down":
             case "dd":
-                if (player.wallet.isSufficientFunds(hand.getBet())) {
-                    player.wallet.subtractBetAmount(hand.getBet());
-                    hand.setBet(hand.getBet() * 2);
-                    nextHand = true;
+                while (!player.wallet.isSufficientFunds(hand.getBet())) {
+                    player.wallet.promptTopUpOnly(player.hands.get(0).getBet(), player);
                 }
-                else {
-                    while (!player.wallet.isSufficientFunds(hand.getBet())) {
-                        player.wallet.promptTopUpOnly(player.hands.get(0).getBet(), player);
-                    }
-                    player.wallet.subtractBetAmount(hand.getBet());
-                    hand.setBet(hand.getBet() * 2);
-                    nextHand = true;
-                }
+                player.wallet.subtractBetAmount(hand.getBet());
+                hand.setBet(hand.getBet() * 2);
+                nextHand = true;
                 //fallthrough
             case "hit":
             case "h":
@@ -204,30 +197,17 @@ public class BlackjackTable {
     }
 
     public void splitHand(Player player, Hand hand) {
-        if (player.wallet.isSufficientFunds(player.hands.get(0).getBet())) {
-            player.hands.add(new Hand());
-            Hand newHand = player.hands.get(player.hands.size()-1);
-            player.hands.get(1).setBet(player.hands.get(0).getBet());
-            player.wallet.subtractBetAmount(player.hands.get(1).getBet());
-            newHand.addCard(hand.getCard(1));
-            hand.removeCard(1);
-            hand.addCard(deck.drawCard());
-            newHand.addCard(deck.drawCard());
+        while (!player.wallet.isSufficientFunds(player.hands.get(0).getBet())) {
+            player.wallet.promptTopUpOnly(player.hands.get(0).getBet(), player);
         }
-        else {
-            while (!player.wallet.isSufficientFunds(player.hands.get(0).getBet())) {
-                player.wallet.promptTopUpOnly(player.hands.get(0).getBet(), player);
-            }
-            player.hands.add(new Hand());
-            Hand newHand = player.hands.get(player.hands.size()-1);
-            player.hands.get(1).setBet(player.hands.get(0).getBet());
-            player.wallet.subtractBetAmount(player.hands.get(1).getBet());
-            newHand.addCard(hand.getCard(1));
-            hand.removeCard(1);
-            hand.addCard(deck.drawCard());
-            newHand.addCard(deck.drawCard());
-        }
-
+        player.hands.add(new Hand());
+        Hand newHand = player.hands.get(player.hands.size()-1);
+        player.hands.get(1).setBet(player.hands.get(0).getBet());
+        player.wallet.subtractBetAmount(player.hands.get(1).getBet());
+        newHand.addCard(hand.getCard(1));
+        hand.removeCard(1);
+        hand.addCard(deck.drawCard());
+        newHand.addCard(deck.drawCard());
     }
 
     private void dealerRound() {
@@ -271,19 +251,19 @@ public class BlackjackTable {
                         }
                         else {
                             player.wallet.addWinningsToWallet(hand.getBet());
-                            System.out.println("\n\t\t--> Won $" + (player.hands.get(0).getBet() * 2) + "!\n\n\t\t");
+                            System.out.println("\n\t\t--> Won $" + (player.hands.get(0).getBet() * 2) + "!");
                         }
                 }
                 else if (checkAgainstDealerHand(hand) == WinCondition.LOSE) {
                     System.out.println("\t" + "Hand " + (player.hands.indexOf(hand) + 1) + ": Losing hand...");
-                    System.out.println("\n\t\t--> $" + (player.hands.get(0).getBet()) + " subtracted from wallet\n\n\t\t");
+                    System.out.println("\n\t\t--> $" + (player.hands.get(0).getBet()) + " subtracted from wallet");
                 }
                 else {
                     System.out.println("\t" + "Hand " + (player.hands.indexOf(hand) + 1) + ": Hand is a draw.");
                     player.wallet.returnBetToWallet(player.hands.get(0).getBet());
                 }
             }
-            System.out.println("\tWallet Total: $" + player.wallet.getWalletTotal() + "/n");
+            System.out.println("\n\tWallet Total: $" + player.wallet.getWalletTotal() + "\n");
         }
     }
 
