@@ -1,5 +1,6 @@
 package GUI;
 
+import Core.BlackjackTable;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -77,6 +78,9 @@ public class BlackJackGUI extends Application {
         primaryStage.show();
     }
     public static void main(String[] args) {
+        BlackjackTable table = new BlackjackTable(6, 2);
+        table.setupRound();
+        table.playRound();
         launch(args);
     }
 }

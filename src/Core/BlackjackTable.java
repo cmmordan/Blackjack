@@ -27,15 +27,16 @@ public class BlackjackTable {
     public static void main(String[] args) {
 
         BlackjackTable table = new BlackjackTable(5, 2);
+        table.setupRound();
+        table.playRound();
+    }
 
-        table.takePlayerBet();
-        table.dealHands();
-
-        table.playerList.get(0).hands.get(0).setHand(Card.Number.A, Card.Number.A);
+    public void setupRound() {
+        takePlayerBet();
+        dealHands();
+        playerList.get(0).hands.get(0).setHand(Card.Number.A, Card.Number.A);
         //table.dealer.getHand().setHand(Card.Number.N10, Card.Number.N6); //Check for soft 17
         //table.dealer.getHand().setHand(Card.Number.A, Card.Number.N10); //Check for 21
-
-        table.playRound();
     }
 
     public void addPlayer(String name, double walletAmount) {
@@ -53,7 +54,6 @@ public class BlackjackTable {
     }
 
     public void takePlayerBet() {
-        Scanner scanner = new Scanner(System.in);
         for (Player player : playerList) {
             player.wallet.placePlayerBet(player);
         }
@@ -149,7 +149,7 @@ public class BlackjackTable {
         dealer.getHand().displayDealerHand();
     }
 
-    private void playRound() {
+    public void playRound() {
         Scanner scanner = new Scanner(System.in);
 
         for (Player player : playerList) {
@@ -274,7 +274,7 @@ public class BlackjackTable {
         for (Player player : playerList) {
             System.out.println("\n" + player.getName() + ":");
             for (Hand hand : player.hands) {
-                System.out.println(String.format("\n\tHand %d: %s", + (player.hands.indexOf(hand) + 1), hand.asString()));
+                System.out.printf("\n\tHand %d: %s%n", (player.hands.indexOf(hand) + 1), hand.asString());
                 if (checkAgainstDealerHand(hand) == WinCondition.WIN) {
                     if (hand.isBlackjack()) {
                         player.wallet.addBlackjackWinnings((hand.getBet()));
