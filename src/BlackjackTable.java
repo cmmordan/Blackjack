@@ -27,14 +27,12 @@ public class BlackjackTable {
         BlackjackTable table = new BlackjackTable(5, 2);
 
         table.takePlayerBet();
-        //table.displayPlayerBets();
         table.dealHands();
 
-        //table.playerList.get(0).hands.get(0).setHand(Card.Number.A, Card.Number.A);
+        table.playerList.get(0).hands.get(0).setHand(Card.Number.A, Card.Number.A);
         //table.dealer.getHand().setHand(Card.Number.N10, Card.Number.N6); //Check for soft 17
         //table.dealer.getHand().setHand(Card.Number.A, Card.Number.N10); //Check for 21
 
-        //table.displayDealerHand();
         table.playRound();
     }
 
@@ -69,8 +67,26 @@ public class BlackjackTable {
     public static double promptInputDouble(Scanner scanner, String promptUser) {
         double userInput;
         System.out.println(promptUser);
-        userInput = scanner.nextDouble();
-        scanner.nextLine();
+
+        while (true) {
+            //Check that input is a number
+            if (!scanner.hasNextDouble()) {
+                System.out.println("Invalid input - Please enter a valid number: $");
+                scanner.next();
+                continue;
+            }
+
+            //Check that user input is positive
+            userInput = scanner.nextDouble();
+            scanner.nextLine();
+            if (userInput < 0) {
+                System.out.println("Invalid input - Please enter a positive number: $");
+                continue;
+            }
+
+            //Number is valid number and is positive
+            break;
+        }
         return userInput;
     }
 
@@ -92,7 +108,7 @@ public class BlackjackTable {
     private void displayPlayerBets() {
         System.out.println("\nBets for round: ");
         for (Player player : playerList) {
-            System.out.println(player.getName() + ": $" + player.hands.get(0).getBet());
+            System.out.println(player.getName() + ": $" + getDollarString(player.hands.get(0).getBet()));
         }
     }
 
@@ -150,7 +166,7 @@ public class BlackjackTable {
 
                     String userInput = askForUserInput(scanner, player);
 
-                    nextHand = handleUserInput(hand, player, nextHand, userInput); //handleUserInput toggles 'nextHand'
+                    nextHand = handleUserInput(hand, player, userInput); //handleUserInput toggles 'nextHand'
                     //hand.displayHand();
                 }
             }
@@ -160,31 +176,37 @@ public class BlackjackTable {
         checkWinCondition();
     }
 
-    private boolean handleUserInput(Hand hand, Player player, boolean nextHand, String playerChoice) {
+    private boolean handleUserInput(Hand hand, Player player, String playerChoice) {
+        boolean dd = false;
         switch (playerChoice.toLowerCase()) {
             case "double down":
             case "dd":
-                while (!player.wallet.isSufficientFunds(hand.getBet())) {
-                    player.wallet.promptTopUpOnly(player.hands.get(0).getBet(), player);
+                if (!player.wallet.isSufficientFunds(hand.getBet())) {
+                    if (!player.wallet.promptTopUpOnly(player.hands.get(0).getBet(), player)) {
+                        return false;
+                    }
                 }
                 player.wallet.subtractBetAmount(hand.getBet());
                 hand.setBet(hand.getBet() * 2);
-                nextHand = true;
+                dd = true;
                 //fallthrough
             case "hit":
             case "h":
                 hand.addCard(deck.drawCard());
+                hand.displayHand();
                 if (hand.isBusted()) {
-                    hand.displayHand();
                     System.out.println("Bust...");
-                    nextHand = true;
+                    return true;
                 }
-                break;
+                if (dd) {
+                    //Double down always goes to next hand - doesn't allow additional actions
+                    return true;
+                }
+                return false;
 
             case "hold":
             case "-":
-                nextHand = true;
-                break;
+                return true;
 
             case "split":
             case "s":
@@ -193,17 +215,20 @@ public class BlackjackTable {
                 } else {
                     System.out.println("Hand can't be split.");
                 }
-                break;
+                return false;
             default:
                 System.out.println("Unrecognized command - Please try again.");
                 break;
         }
-        return nextHand;
+        return false;
     }
 
     public void splitHand(Player player, Hand hand) {
-        while (!player.wallet.isSufficientFunds(player.hands.get(0).getBet())) {
-            player.wallet.promptTopUpOnly(player.hands.get(0).getBet(), player);
+        if (!player.wallet.isSufficientFunds(player.hands.get(0).getBet())) {
+            boolean userAffirmation = player.wallet.promptTopUpOnly(player.hands.get(0).getBet(), player);
+            if (!userAffirmation) {
+                return;
+            }
         }
         player.hands.add(new Hand());
         Hand newHand = player.hands.get(player.hands.size()-1);
@@ -247,28 +272,30 @@ public class BlackjackTable {
         for (Player player : playerList) {
             System.out.println("\n" + player.getName() + ":");
             for (Hand hand : player.hands) {
+                System.out.println(String.format("\n\tHand %d: %s", + (player.hands.indexOf(hand) + 1), hand.asString()));
                 if (checkAgainstDealerHand(hand) == WinCondition.WIN) {
-                    System.out.println("\tHand " + (player.hands.indexOf(hand) + 1) + ": Winning hand!");
-                        if (hand.isBlackjack()) {
-                            player.wallet.addBlackjackWinnings((hand.getBet()));
-                            System.out.println("\n\t\t--> BlackJack!\n\n\t\t--> Won $" + (player.hands.get(0).getBet() + (player.hands.get(0).getBet() * 1.5)));
-                        }
-                        else {
-                            player.wallet.addWinningsToWallet(hand.getBet());
-                            System.out.println("\n\t\t--> Won $" + (player.hands.get(0).getBet() * 2) + "!");
-                        }
+                    if (hand.isBlackjack()) {
+                        player.wallet.addBlackjackWinnings((hand.getBet()));
+                        System.out.println("\n\t\t--> BlackJack!\n\n\t\t--> Won $" + getDollarString((player.hands.get(0).getBet() * 1.5)));
+                    }
+                    else {
+                        player.wallet.addWinningsToWallet(hand.getBet());
+                        System.out.println("\n\t\t--> Won $" + getDollarString(player.hands.get(0).getBet()) + "!");
+                    }
                 }
                 else if (checkAgainstDealerHand(hand) == WinCondition.LOSE) {
-                    System.out.println("\t" + "Hand " + (player.hands.indexOf(hand) + 1) + ": Losing hand...");
-                    System.out.println("\n\t\t--> $" + (player.hands.get(0).getBet()) + " subtracted from wallet");
+                    System.out.println("\n\t\t--> Lost $" + getDollarString(player.hands.get(0).getBet()) + "!");
                 }
                 else {
-                    System.out.println("\t" + "Hand " + (player.hands.indexOf(hand) + 1) + ": Hand is a draw.");
+                    System.out.println("\n\t--> Hand is a draw.");
                     player.wallet.returnBetToWallet(player.hands.get(0).getBet());
                 }
             }
-            System.out.println("\n\tWallet Total: $" + player.wallet.getWalletTotal() + "\n");
+            System.out.println("\n\tWallet Total: $" + getDollarString(player.wallet.getWalletTotal()) + "\n");
         }
     }
 
+    public static String getDollarString(double number) {
+        return String.format("%.2f", number);
+    }
 }

@@ -70,12 +70,24 @@ public class Hand {
         return false;
     }
 
-    public void displayHand() {
+    /*  public void displayHand() {
         System.out.print("\n\t");
         for (Card card : hand) {
             System.out.print(card.getDisplayedCard());
         }
         System.out.println("\n");
+    }*/
+
+    public void displayHand() {
+        System.out.println(String.format("\n\t%s\n", this.asString()));
+    }
+
+    public String asString() {
+        String ret = "";
+        for (Card card : hand) {
+            ret += String.format("[%s%s]", card.getCardNumber(), card.getCardSuit());
+        }
+        return ret;
     }
 
     public void displayDealerHand() {

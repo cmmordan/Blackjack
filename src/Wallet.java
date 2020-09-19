@@ -24,7 +24,7 @@ public class Wallet {
 
     public double topUp(double topUpAmount) {
         walletTotal += topUpAmount;
-        System.out.println("(Added $" + topUpAmount + ". New wallet balance: $" + walletTotal + ")");
+        System.out.println("(Added $" + topUpAmount + ". New wallet balance: $" + BlackjackTable.getDollarString(walletTotal) + ")");
         return walletTotal;
     }
 
@@ -35,7 +35,8 @@ public class Wallet {
     public boolean subtractBetAmount(double betAmount) {
         if (isSufficientFunds(betAmount)) {
             walletTotal -= betAmount;
-            System.out.println("(Subtracted $" + betAmount + " from wallet)");
+            System.out.println("(Subtracted $" + betAmount + ". New wallet balance: $" + BlackjackTable.getDollarString(walletTotal) + ")");
+
             return true;
         }
         return false;
@@ -67,7 +68,7 @@ public class Wallet {
                         betInput = BlackjackTable.promptInputDouble(BlackjackTable.scanner, "Enter new bet: $");
                         player.makeBet(betInput);
                         if (!player.wallet.isSufficientFunds(betInput)) {
-                            System.out.println("Insufficient funds. Enter bet smaller than $" + player.wallet.getWalletTotal() + ".");
+                            System.out.println("Insufficient funds. Enter bet smaller than $" + BlackjackTable.getDollarString(player.wallet.getWalletTotal()) + ".");
                         }
                         break;
 
@@ -79,7 +80,7 @@ public class Wallet {
         }
     }
 
-    public void promptTopUpOnly(double betInput, Player player) {
+    public boolean promptTopUpOnly(double betInput, Player player) {
         if (!isSufficientFunds(betInput)) {
             while (!isSufficientFunds(betInput)) {
                 String topUpChoiceInput = BlackjackTable.promptInputString(BlackjackTable.scanner, "Funds are insufficient to double bet. Do you wish to top up? Y/N");
@@ -88,10 +89,9 @@ public class Wallet {
                         double topUpAmount = BlackjackTable.promptInputDouble(BlackjackTable.scanner, "Enter amount to top up: $");
                         topUp(topUpAmount);
                         player.makeBet(betInput);
-                        break;
+                        return true;
                     case "n":
-                        System.out.println("Unable to place double down bet. Please top up.");
-                        break;
+                        return false;
                     default:
                         System.out.println("Invalid choice. Try again");
                         break;
@@ -99,6 +99,7 @@ public class Wallet {
 
             }
         }
+        return false;
     }
 
     public double addWinningsToWallet(double betAmount) {
@@ -115,6 +116,6 @@ public class Wallet {
     }
 
     public void printWalletTotal() {
-        System.out.println("Wallet total: $" + walletTotal);
+        System.out.println("Wallet total: $" + BlackjackTable.getDollarString(walletTotal));
     }
 }
