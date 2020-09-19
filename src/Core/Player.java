@@ -13,7 +13,7 @@ public class Player {
         this.wallet = new Wallet(startingAmount);
         this.hands.add(new Hand());
         if (!name.equalsIgnoreCase("dealer")) {
-            System.out.println("Welcome " + name + "! Wallet balance: $" + startingAmount);
+            System.out.println("Welcome " + name + "! Wallet balance: $" + BlackjackTable.getDollarString(startingAmount));
         }
     }
 
