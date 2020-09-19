@@ -1,3 +1,5 @@
+package Core;
+
 public class Card {
 
     public Card(Number num, Suit suit) {
