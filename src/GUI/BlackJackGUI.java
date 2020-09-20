@@ -78,9 +78,9 @@ public class BlackJackGUI extends Application {
         primaryStage.show();
     }
     public static void main(String[] args) {
-        BlackjackTable table = new BlackjackTable(6, 2);
-        table.setupRound();
-        table.playRound();
+        //BlackjackTable table = new BlackjackTable(6, 2);
+        //table.setupRound();
+        //table.playRound();
         launch(args);
     }
 }
